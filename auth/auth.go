@@ -4,7 +4,7 @@ import (
 	"code.google.com/p/goauth2/oauth"
 	"errors"
 	"fmt"
-	"github.com/prasmussen/gdrive/util"
+	"github.com/urmet/gdrive/util"
 	"net/http"
 )
 

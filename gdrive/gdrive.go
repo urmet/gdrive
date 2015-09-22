@@ -2,9 +2,9 @@ package gdrive
 
 import (
 	"github.com/prasmussen/google-api-go-client/drive/v2"
-	"github.com/prasmussen/gdrive/auth"
-	"github.com/prasmussen/gdrive/config"
-	"github.com/prasmussen/gdrive/util"
+	"github.com/urmet/gdrive/auth"
+	"github.com/urmet/gdrive/config"
+	"github.com/urmet/gdrive/util"
 	"net/http"
 	"path/filepath"
 )

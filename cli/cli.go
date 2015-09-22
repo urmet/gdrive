@@ -3,8 +3,8 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/prasmussen/gdrive/gdrive"
-	"github.com/prasmussen/gdrive/util"
+	"github.com/urmet/gdrive/gdrive"
+	"github.com/urmet/gdrive/util"
 	"github.com/prasmussen/google-api-go-client/drive/v2"
 	"golang.org/x/net/context"
 	"io"
