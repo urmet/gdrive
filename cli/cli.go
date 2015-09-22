@@ -181,8 +181,8 @@ func printInfo(d *gdrive.Drive, f *drive.File, sizeInBytes bool) {
 }
 
 // Create folder in drive
-func Folder(d *gdrive.Drive, title string, parentId string, share bool) error {
-	info, err := makeFolder(d, title, parentId, share)
+func Folder(d *gdrive.Drive, title string, parentId string, share bool, properties string) error {
+	info, err := makeFolder(d, title, parentId, share, properties)
 	if err != nil {
 		return err
 	}
@@ -191,7 +191,7 @@ func Folder(d *gdrive.Drive, title string, parentId string, share bool) error {
 	return nil
 }
 
-func makeFolder(d *gdrive.Drive, title string, parentId string, share bool) (*drive.File, error) {
+func makeFolder(d *gdrive.Drive, title string, parentId string, share bool, properties string) (*drive.File, error) {
 	// File instance
 	f := &drive.File{Title: title, MimeType: "application/vnd.google-apps.folder"}
 	// Set parent (if provided)
@@ -199,6 +199,9 @@ func makeFolder(d *gdrive.Drive, title string, parentId string, share bool) (*dr
 		p := &drive.ParentReference{Id: parentId}
 		f.Parents = []*drive.ParentReference{p}
 	}
+
+	json.Unmarshal([]byte(properties), &f.Properties)
+
 	// Create folder
 	info, err := d.Files.Insert(f).Do()
 	if err != nil {
@@ -267,7 +270,7 @@ func Upload(d *gdrive.Drive, input *os.File, title string, parentId string, shar
 
 func uploadDirectory(d *gdrive.Drive, input *os.File, inputInfo os.FileInfo, title string, parentId string, share bool, mimeType string, convert bool) error {
 	// Create folder
-	folder, err := makeFolder(d, filepath.Base(inputInfo.Name()), parentId, share)
+	folder, err := makeFolder(d, filepath.Base(inputInfo.Name()), parentId, share, "")
 	if err != nil {
 		return err
 	}

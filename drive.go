@@ -41,6 +41,7 @@ type Options struct {
 		Title    string `goptions:"-t, --title, obligatory, description='Folder to create'"`
 		ParentId string `goptions:"-p, --parent, description='Parent Id of the folder'"`
 		Share    bool   `goptions:"--share, description='Share created folder'"`
+		Properties string  `goptions:"--properties, description='Add properties to created folder'"`
 	} `goptions:"folder"`
 
 	Upload struct {
@@ -112,7 +113,7 @@ func main() {
 
 	case "folder":
 		args := opts.Folder
-		err = cli.Folder(drive, args.Title, args.ParentId, args.Share)
+		err = cli.Folder(drive, args.Title, args.ParentId, args.Share, args.Properties)
 
 	case "upload":
 		args := opts.Upload
