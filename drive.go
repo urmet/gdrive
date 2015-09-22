@@ -52,6 +52,7 @@ type Options struct {
 		MimeType  string   `goptions:"--mimetype, description='The MIME type (default will try to figure it out)'"`
 		Convert   bool     `goptions:"--convert, description='File will be converted to Google Docs format'"`
 		ChunkSize int64    `goptions:"-C, --chunksize, description='Set chunk size in bytes. Minimum is 262144, default is 4194304. Recommended to be a power of two.'"`
+		Properties string  `goptions:"--properties, description='Add properties to uploaded file as a json string(only for stdin/single file uploads)'"`
 	} `goptions:"upload"`
 
 	Download struct {
@@ -122,9 +123,9 @@ func main() {
 		}
 
 		if args.Stdin {
-			err = cli.UploadStdin(drive, os.Stdin, args.Title, args.ParentId, args.Share, args.MimeType, args.Convert)
+			err = cli.UploadStdin(drive, os.Stdin, args.Title, args.ParentId, args.Share, args.MimeType, args.Convert, args.Properties)
 		} else {
-			err = cli.Upload(drive, args.File, args.Title, args.ParentId, args.Share, args.MimeType, args.Convert)
+			err = cli.Upload(drive, args.File, args.Title, args.ParentId, args.Share, args.MimeType, args.Convert, args.Properties)
 		}
 
 	case "download":

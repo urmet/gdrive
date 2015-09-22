@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/prasmussen/gdrive/gdrive"
 	"github.com/prasmussen/gdrive/util"
@@ -211,7 +212,7 @@ func makeFolder(d *gdrive.Drive, title string, parentId string, share bool) (*dr
 }
 
 // Upload file to drive
-func UploadStdin(d *gdrive.Drive, input io.ReadCloser, title string, parentId string, share bool, mimeType string, convert bool) error {
+func UploadStdin(d *gdrive.Drive, input io.ReadCloser, title string, parentId string, share bool, mimeType string, convert bool, properties string) error {
 	// File instance
 	f := &drive.File{Title: title}
 	// Set parent (if provided)
@@ -219,6 +220,9 @@ func UploadStdin(d *gdrive.Drive, input io.ReadCloser, title string, parentId st
 		p := &drive.ParentReference{Id: parentId}
 		f.Parents = []*drive.ParentReference{p}
 	}
+
+	json.Unmarshal([]byte(properties), &f.Properties)
+
 	getRate := util.MeasureTransferRate()
 
 	if convert {
@@ -245,7 +249,7 @@ func UploadStdin(d *gdrive.Drive, input io.ReadCloser, title string, parentId st
 	return err
 }
 
-func Upload(d *gdrive.Drive, input *os.File, title string, parentId string, share bool, mimeType string, convert bool) error {
+func Upload(d *gdrive.Drive, input *os.File, title string, parentId string, share bool, mimeType string, convert bool, properties string) error {
 	// Grab file info
 	inputInfo, err := input.Stat()
 	if err != nil {
@@ -255,7 +259,7 @@ func Upload(d *gdrive.Drive, input *os.File, title string, parentId string, shar
 	if inputInfo.IsDir() {
 		return uploadDirectory(d, input, inputInfo, title, parentId, share, mimeType, convert)
 	} else {
-		return uploadFile(d, input, inputInfo, title, parentId, share, mimeType, convert)
+		return uploadFile(d, input, inputInfo, title, parentId, share, mimeType, convert, properties)
 	}
 
 	return nil
@@ -301,7 +305,7 @@ func uploadDirectory(d *gdrive.Drive, input *os.File, inputInfo os.FileInfo, tit
 		if fi.IsDir() {
 			err = uploadDirectory(d, f, fi, "", folder.Id, share, mimeType, convert)
 		} else {
-			err = uploadFile(d, f, fi, "", folder.Id, share, mimeType, convert)
+			err = uploadFile(d, f, fi, "", folder.Id, share, mimeType, convert, "")
 		}
 
 		if err != nil {
@@ -312,7 +316,7 @@ func uploadDirectory(d *gdrive.Drive, input *os.File, inputInfo os.FileInfo, tit
 	return nil
 }
 
-func uploadFile(d *gdrive.Drive, input *os.File, inputInfo os.FileInfo, title string, parentId string, share bool, mimeType string, convert bool) error {
+func uploadFile(d *gdrive.Drive, input *os.File, inputInfo os.FileInfo, title string, parentId string, share bool, mimeType string, convert bool, properties string) error {
 	if title == "" {
 		title = filepath.Base(inputInfo.Name())
 	}
@@ -328,6 +332,9 @@ func uploadFile(d *gdrive.Drive, input *os.File, inputInfo os.FileInfo, title st
 		p := &drive.ParentReference{Id: parentId}
 		f.Parents = []*drive.ParentReference{p}
 	}
+
+	json.Unmarshal([]byte(properties), &f.Properties)
+
 	getRate := util.MeasureTransferRate()
 
 	if convert {
@@ -352,6 +359,7 @@ func uploadFile(d *gdrive.Drive, input *os.File, inputInfo os.FileInfo, title st
 		err = Share(d, info.Id)
 	}
 	return err
+
 }
 
 func DownloadLatest(d *gdrive.Drive, stdout bool, format string, force bool) error {
